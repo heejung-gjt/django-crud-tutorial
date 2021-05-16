@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>회원가입페이지</h1>
+{% if error.state %}
+{{error.msg}}
+{% endif %}
+<form action="{% url 'register' %}"method='POST'>
+  {% csrf_token %}
+  <input type="text" name="id"placeholder='아이디입력'><br><br>
+  <input type="password" name="password"placeholder='비번입력'><br><br>
+  <input type="password_chk" name="password_chk"placeholder='비번확인'><br><br>
+  <h2>프로필 설정</h2>
+  <input type="text" name="nickname"placeholder='닉네임 입력'><br><br>
+  <textarea name="intro"placeholder='자기소개 입력'></textarea><br><br>
+  <button type="submit">회원가입하기</button>
+
+</form><br>
+<a href="{% url 'home' %}">뒤로가기</a>
+{% endblock content %}
