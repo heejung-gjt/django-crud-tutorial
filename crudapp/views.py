@@ -123,8 +123,11 @@ def category(request):
 
 def article_list(request, category_pk):
   article = Article.objects.filter(category__pk = category_pk).all()
+  category_pk = Category.objects.filter(pk = category_pk).first().pk
+  # Article category__pk.pk로 하면 Article이 없는 카테고리를 들어갈때 에러 발생함
   context = {
-    'articles':article
+    'articles':article,
+    'category_pk':category_pk
   }
   return render(request, 'article_list.html',context)
 
@@ -149,3 +152,29 @@ def writer(request):
       )
       return redirect('category')
   return render(request, 'writer.html',context)
+
+
+def article_detail(request, article_pk):
+  article = get_object_or_404(Article, pk = article_pk)
+  context = {
+    'article':article
+  }
+  return render(request, 'article_detail.html',context)
+
+
+def article_writer(request, category_pk):
+  category = Category.objects.filter(pk = category_pk).first()
+  if request.method == 'POST':
+    title = request.POST['title']
+    content = request.POST['content']
+    Article.objects.create(
+      title = title,
+      content = content,
+      category = category,
+      writer = request.user
+    )
+    return redirect('article_list',category_pk)
+  context = {
+    'category':category
+  }
+  return render(request, 'article_writer.html',context)

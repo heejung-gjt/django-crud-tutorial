@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>글 세부 페이지</h1>
+<hr>
+<h3>제목</h3>
+{{article.title}}
+<hr>
+<h3>작성자</h3>
+{{article.writer}}
+<hr>
+<h3>내용</h3>
+{{article.content}}
+<hr>
+<a href="{% url 'article_list' article.category.pk %}">뒤로가기</a><br>
+
+{% if article.writer == request.user %}
+<a href="">수정하기</a>
+<a href="">삭제하기</a>
+{% endif %}
+
+{% endblock content %}
