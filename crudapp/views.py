@@ -1,5 +1,5 @@
-from crudapp.models import Follow, Profile
-from django.shortcuts import redirect, render
+from crudapp.models import Follow, Profile,Category,Article
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib.auth import authenticate
@@ -114,4 +114,38 @@ def follow(request, user_pk):
 
 
 def category(request):
-  return render(request, 'category.html')
+  category = Category.objects.all()
+  context = {
+    'categories':category
+  }
+  return render(request, 'category.html',context)
+
+
+def article_list(request, category_pk):
+  article = Article.objects.filter(category__pk = category_pk).all()
+  context = {
+    'articles':article
+  }
+  return render(request, 'article_list.html',context)
+
+
+def writer(request):
+  category = Category.objects.all()
+  context = {
+   'categories':category
+   }
+  if request.method == 'POST':
+    title = request.POST['title']
+    content = request.POST['content']
+    category_pk = request.POST['category_pk']
+
+    if title and content and category_pk:
+      category = Category.objects.filter(pk = category_pk).first()    
+      Article.objects.create(
+        title = title,
+        writer = request.user,
+        content = content,
+        category=category
+      )
+      return redirect('category')
+  return render(request, 'writer.html',context)

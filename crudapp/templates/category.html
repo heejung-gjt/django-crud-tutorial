@@ -3,5 +3,15 @@
 {% block content %}
 <h1>카테고리</h1>
 <br>
+<hr>
+<ul>
+{% for category in categories %}
+<li><a href="{% url 'article_list' category.pk %}">{{category}}</a></li>
+{% endfor %}
+</ul>
+<hr>
+<br>
+<a href="{% url 'writer' %}">글작성하기</a>
+<hr>
 <a href="{% url 'home' %}">뒤로가기</a>
 {% endblock content %}

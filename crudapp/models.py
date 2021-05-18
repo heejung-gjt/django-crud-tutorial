@@ -25,11 +25,11 @@ class Category(models.Model):
     return self.name
 
 class Article(models.Model):
-  category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='article')
+  category = models.ForeignKey(Category, on_delete=models.CASCADE,blank=True, related_name='article')
   writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article')
   title = models.CharField(max_length=64)
   content = models.TextField()
-  create_at = models.TextField(default = time.time())
+  create_at = models.TextField(default=time.time())
   modify_at = models.DateTimeField(auto_now_add=True)
   is_deleted = models.BooleanField(default=False)
   

@@ -26,4 +26,6 @@ urlpatterns = [
     path('my_page/<int:user_pk>',views.my_page, name='my_page'),
     path('follow/<int:user_pk>', views.follow, name='follow'),
     path('category',views.category, name='category'),
+    path('article_list/<int:category_pk>', views.article_list, name='article_list'),
+    path('writer/',views.writer, name='writer'),
 ]

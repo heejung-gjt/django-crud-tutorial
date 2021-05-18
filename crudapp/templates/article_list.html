@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>글 목록</h1>
+
+<br>
+<ul>
+  {% for article in articles %}
+  <li>
+    <a href="">{{article.title}}</a>
+    <small> [작성자 - {{article.writer}}]</small>
+  </li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<a href="{% url 'category' %}">뒤로가기</a>
+
+{% endblock content %}
