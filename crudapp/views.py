@@ -1,4 +1,4 @@
-from crudapp.models import Profile
+from crudapp.models import Follow, Profile
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib import auth
@@ -6,7 +6,11 @@ from django.contrib.auth import authenticate
 # Create your views here.
 
 def home(request):
-  return render(request,'home.html')
+  users = User.objects.all()
+  context = {
+    'users':users
+  }
+  return render(request,'home.html',context)
 
 def register(request):
   context = {
@@ -47,6 +51,10 @@ def register(request):
         nickname = nickname,
         intro = intro
       )
+
+      Follow.objects.create(
+        user = user
+      )
       auth.login(request, user)
       return redirect('home')
 
@@ -82,4 +90,28 @@ def logout(request):
 
 
 def my_page(request,user_pk):
-  return render(request,'my_page.html')
+  is_followed = False
+  owner = User.objects.filter(pk = user_pk).first()
+  follow = Follow.objects.filter(user__pk = user_pk).first()
+  if request.user in follow.followers.all():
+    is_followed = True
+  context = {
+    'owner':owner,
+    'is_followed':is_followed,
+    'followers':follow.followers.all()
+  }
+  return render(request,'my_page.html',context)
+
+
+def follow(request, user_pk):
+  follow = Follow.objects.filter(user__pk = user_pk).first()
+  followers_list = follow.followers.all()
+  if request.user in followers_list:
+    follow.followers.remove(request.user)
+    return redirect('my_page',user_pk)
+  follow.followers.add(request.user)    
+  return redirect('my_page',user_pk)
+
+
+def category(request):
+  return render(request, 'category.html')

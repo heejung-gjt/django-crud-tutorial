@@ -1,13 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{user.profile.nickname}}님 프로필</h1>
+
+<h1>{{owner.profile.nickname}}님 프로필</h1>
 <hr>
+{% if request.user.pk == owner.pk %}
 <h4>아이디</h4>
-{{user}}
-<br><hr>
+{{owner}}
+<br>
+<hr>
 <h4>자기소개</h4>
-{{user.profile.intro}}
-<br><hr>
+{{owner.profile.intro}}
+<br>
+<hr>
+{% else %}
+방문자 {{request.user}}님 환영합니다 <br>
+<br>
+<form action="{% url 'follow' owner.pk %}" method='POST'>
+  {% csrf_token %}
+  {% if is_followed %}
+  <button type="submit">unfollow</button>
+  {% else %}
+  <button type="submit">follow</button>
+  {% endif %}
+</form>
+{% endif %}
+<h4>팔로워 보기</h4>
+<select name="followers" id="follow-select">
+  <option value="" selected>팔로워 보기</option>
+  {% for follower in followers %}
+  <option value="{{follower.pk}}">{{follower}}</option>
+  {% endfor %}
+</select>
+<hr>
 <a href="{% url 'home' %}">뒤로가기</a>
 {% endblock content %}

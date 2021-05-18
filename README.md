@@ -42,6 +42,9 @@ __(github에 commit할 계획이라면 .gitignore를 만들어 필수로 넣어�
 
 ## 회원가입,로그인,로그아웃 페이지 구현 
 
+>__회원가입 페이지 구현__   
+<br>
+
 __1. django.contrib.auth를 이용한 회원가입 구현__        
 회원가입시 유저의 프로필도 함께 만들어주었다. models.py에서 user와 profile를 1:1로 묶어준다. user가 생성될때 해당 user와 1:1 매핑되는 profile도 생성된다. 자세한 코드는 파일에서 확인해보자
 
@@ -93,3 +96,39 @@ __5. home 템플릿에서 로그인 된 경우와 그렇지 않은 경우에 보
 {% if user.is_authenticated %}
 {{user.profile.nickname}}님 환영합니다 !
 ```
+
+<br>
+
+>__로그인 페이지 구현__    
+
+__1. 입력받은 id,pwd 데이터를 post 요청으로 view에 전송한다__    
+
+<br>
+
+__2. login은 post,get 요청을 받기때문에 post인 경우와 get인 경우를 나눠서 로직을 작성한다. autheniticate를 사용하여 username과 password가 auth user에 존재하는지를 확인해준다. 존재한다면 ```auth.login```를 사용해 로그인해준다__ 
+
+```python
+#views.py
+
+if request.method == 'POST':
+    userid = request.POST['id']
+    pwd = request.POST['password']
+
+    user = authenticate(username = userid, password = pwd)
+    if user is  None:
+      context['error']['state'] = True
+      context['error']['msg'] = '아이디와 비밀번호를 확인해주세요'
+
+    auth.login(request, user)
+    return redirect('home') # post요청일때의 반환값
+
+return render(request, 'login.html',context) # get요청일때의 반환값
+
+```
+<br>
+
+>__로그아웃 페이지 구현__   
+
+__1. ```auth.logout(request)```를 사용해 현재 로그인되어 있는 user를 로그아웃 해준다__   
+
+<br>

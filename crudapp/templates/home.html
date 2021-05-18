@@ -2,11 +2,20 @@
 
 {% block content %}
 <h1>홈페이지</h1>
-<hr>
+
 {% if user.is_authenticated %}
+<ul>
+  {% for user in users %}
+  <li><a href="{% url 'my_page' user.pk %}">{{user}}</a></li>
+  {% endfor %}
+  </ul>
+  <hr>
 {{user.profile.nickname}}님 환영합니다 !
 <br><br>
 <a href="{% url 'my_page' user.pk %}">마이페이지 이동</a> 
+<hr>
+<h3>커뮤니티</h3>
+<a href="{% url 'category' %}">글쓰러가기</a>
 <hr>
 <br>
 <a href="{% url 'logout' %}">로그아웃하기</a>
