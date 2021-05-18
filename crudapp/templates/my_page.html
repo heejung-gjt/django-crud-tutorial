@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{user.profile.nickname}}님 프로필</h1>
+<hr>
+<h4>아이디</h4>
+{{user}}
+<br><hr>
+<h4>자기소개</h4>
+{{user.profile.intro}}
+<br><hr>
+<a href="{% url 'home' %}">뒤로가기</a>
+{% endblock content %}

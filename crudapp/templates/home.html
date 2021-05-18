@@ -2,9 +2,12 @@
 
 {% block content %}
 <h1>홈페이지</h1>
-
+<hr>
 {% if user.is_authenticated %}
 {{user.profile.nickname}}님 환영합니다 !
+<br><br>
+<a href="{% url 'my_page' user.pk %}">마이페이지 이동</a> 
+<hr>
 <br>
 <a href="{% url 'logout' %}">로그아웃하기</a>
 {% else %}

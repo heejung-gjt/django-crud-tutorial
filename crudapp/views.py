@@ -79,3 +79,7 @@ def login(request):
 def logout(request):
   auth.logout(request)
   return redirect('home')
+
+
+def my_page(request,user_pk):
+  return render(request,'my_page.html')
