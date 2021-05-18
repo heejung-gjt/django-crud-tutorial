@@ -33,3 +33,7 @@ class Article(models.Model):
   modify_at = models.DateTimeField(auto_now_add=True)
   is_deleted = models.BooleanField(default=False)
   
+
+class Tag(models.Model):
+  name = models.CharField(max_length=64, unique=True)
+  articles = models.ManyToManyField(Article, blank=True, related_name='tag')

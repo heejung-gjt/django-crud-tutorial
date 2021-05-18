@@ -1,4 +1,4 @@
-from crudapp.models import Follow, Profile,Category,Article
+from crudapp.models import Follow, Profile,Category,Article,Tag
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import auth
@@ -156,8 +156,11 @@ def writer(request):
 
 def article_detail(request, article_pk):
   article = get_object_or_404(Article, pk = article_pk)
+  tag = Tag.objects.filter(articles__pk = article_pk).all()
+
   context = {
-    'article':article
+    'article':article,
+    'tags':tag
   }
   return render(request, 'article_detail.html',context)
 
@@ -178,3 +181,20 @@ def article_writer(request, category_pk):
     'category':category
   }
   return render(request, 'article_writer.html',context)
+
+
+def tag(request, article_pk):
+  name = request.POST['tag']
+  article = Article.objects.filter(pk = article_pk).first()
+  tag = Tag.objects.filter(name = name).first()
+
+  if tag:
+    tag.articles.add(article)
+    return redirect('article_detail',article_pk)
+  
+  new_tag = Tag.objects.create(
+    name = name
+  )
+  new_tag.articles.add(article)
+
+  return redirect('article_detail',article_pk)
