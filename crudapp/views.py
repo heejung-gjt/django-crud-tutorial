@@ -2,6 +2,7 @@ from crudapp.models import Profile
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib import auth
+from django.contrib.auth import authenticate
 # Create your views here.
 
 def home(request):
@@ -50,3 +51,31 @@ def register(request):
       return redirect('home')
 
   return render(request,'register.html',context)
+
+
+def login(request):
+  context = {
+  'error':
+  {
+    'state':False,
+    'msg':''
+  }
+}
+  if request.method == 'POST':
+    userid = request.POST['id']
+    pwd = request.POST['password']
+
+    user = authenticate(username = userid, password = pwd)
+    if user is  None:
+      context['error']['state'] = True
+      context['error']['msg'] = '아이디와 비밀번호를 확인해주세요'
+
+    auth.login(request, user)
+    return redirect('home')
+
+  return render(request, 'login.html',context)
+
+
+def logout(request):
+  auth.logout(request)
+  return redirect('home')

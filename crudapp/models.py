@@ -9,4 +9,4 @@ class Profile(models.Model):
   intro = models.TextField()
 
   def __str__(self):
-    return self.user 
+    return self.user.username
