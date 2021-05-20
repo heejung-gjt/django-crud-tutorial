@@ -3,7 +3,7 @@
 {% block content %}
 <h1>글쓰기</h1>
 
-<form action="{% url 'writer' %}"method="POST">
+<form action="{% url 'blog:writer' %}"method="POST">
   {% csrf_token %}
   <select name="category_pk">
     {% for category in categories %}
@@ -18,5 +18,5 @@
 
 
 
-<a href="{% url 'category' %}">뒤로가기</a>
+<a href="{% url 'blog:category' %}">뒤로가기</a>
 {% endblock content %}

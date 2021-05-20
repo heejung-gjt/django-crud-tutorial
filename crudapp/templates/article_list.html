@@ -7,16 +7,16 @@
 <ul>
   {% for article in articles %}
   <li>
-    <a href="{% url 'article_detail' article.pk %}">{{article.title}}</a>
+    <a href="{% url 'blog:article_detail' article.pk %}">{{article.title}}</a>
     <small> [작성자 - {{article.writer}}]</small>
   </li>
   {% endfor %}
 </ul>
 
 <hr>
-<a href="{% url 'article_writer' category_pk %}">글작성하기</a>
+<a href="{% url 'blog:article_writer' category_pk %}">글작성하기</a>
 <hr>
 
-<a href="{% url 'category' %}">뒤로가기</a>
+<a href="{% url 'blog:category' %}">뒤로가기</a>
 
 {% endblock content %}

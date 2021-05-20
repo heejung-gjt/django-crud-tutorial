@@ -6,21 +6,21 @@
 {% if user.is_authenticated %}
 <ul>
   {% for user in users %}
-  <li><a href="{% url 'my_page' user.pk %}">{{user}}</a></li>
+  <li><a href="{% url 'user:my_page' user.pk %}">{{user}}</a></li>
   {% endfor %}
   </ul>
   <hr>
 {{user.profile.nickname}}님 환영합니다 !
 <br><br>
-<a href="{% url 'my_page' user.pk %}">마이페이지 이동</a> 
+<a href="{% url 'user:my_page' user.pk %}">마이페이지 이동</a> 
 <hr>
 <h3>커뮤니티</h3>
-<a href="{% url 'category' %}">글쓰러가기</a>
+<a href="{% url 'blog:category' %}">글쓰러가기</a>
 <hr>
 <br>
-<a href="{% url 'logout' %}">로그아웃하기</a>
+<a href="{% url 'user:logout' %}">로그아웃하기</a>
 {% else %}
-<a href="{% url 'login' %}">로그인하기</a><br>
-<a href="{% url 'register' %}">회원가입하기</a>
+<a href="{% url 'user:login' %}">로그인하기</a><br>
+<a href="{% url 'user:register' %}">회원가입하기</a>
 {% endif %}
 {% endblock content %}

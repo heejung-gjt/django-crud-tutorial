@@ -13,7 +13,7 @@
 {{article.content}}
 <hr>
 <h3>해시태그</h3>
-<form action="{% url 'tag' article.pk %}" method="POST">
+<form action="{% url 'tag:tag' article.pk %}" method="POST">
 {% csrf_token %}
   <input type="text" name="tag" placeholder="태그입력">
   <button type="submit">등록하기</button>
@@ -23,7 +23,7 @@
 <span><strong>#{{tag.name}}</strong></span>
 {% endfor %}
 <hr>
-<a href="{% url 'article_list' article.category.pk %}">뒤로가기</a><br>
+<a href="{% url 'blog:article_list' article.category.pk %}">뒤로가기</a><br>
 
 {% if article.writer == request.user %}
 <a href="">수정하기</a>

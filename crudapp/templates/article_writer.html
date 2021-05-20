@@ -4,7 +4,7 @@
 <h1>글쓰기</h1>
 <br>
 
-<form action="{% url 'article_writer' category.pk %}"method="POST">
+<form action="{% url 'blog:article_writer' category.pk %}"method="POST">
   {% csrf_token %}
   <select name="category_pk">
     <option selected>{{category.name}}</option>
@@ -15,6 +15,6 @@
 </form>
 
 
-<a href="{% url 'category' %}">뒤로가기</a>
+<a href="{% url 'blog:category' %}">뒤로가기</a>
 
 {% endblock content %}
