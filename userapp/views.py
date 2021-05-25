@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.contrib.auth import authenticate
 
 
+
 def home(request):
   users = User.objects.all()
   context = {
@@ -56,7 +57,7 @@ def register(request):
         user = user
       )
       auth.login(request, user)
-      return redirect('home')
+      return redirect('user:home')
 
   return render(request,'register.html',context)
 

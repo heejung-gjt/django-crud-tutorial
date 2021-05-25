@@ -16,7 +16,7 @@
 {% else %}
 방문자 {{request.user}}님 환영합니다 <br>
 <br>
-<form action="{% url 'follow' owner.pk %}" method='POST'>
+<form action="{% url 'follow:follow' owner.pk %}" method='POST'>
   {% csrf_token %}
   {% if is_followed %}
   <button type="submit">unfollow</button>
