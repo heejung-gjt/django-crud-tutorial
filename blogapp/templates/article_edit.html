@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>글 수정하기</h1>
+{% if state %}
+<h4>내용을 전부 작성해주세요 !</h4>
+{% endif %}
+
+<form action="{% url 'blog:article_edit' article.pk %}"method="POST">
+  {% csrf_token %}
+  <select name="category_pk">
+    <option selected>{{article.category.name}}</option>
+  </select><br><br>
+  <input type="text"name="title"value={{article.title}}><br><br>
+  <textarea name="content">{{article.content}}</textarea><br><br>
+<button type="submit">수정하기</button><br><br>
+</form>
+
+
+<a href="{% url 'blog:article_detail' article.pk %}">뒤로가기</a>
+
+
+{% endblock content %}

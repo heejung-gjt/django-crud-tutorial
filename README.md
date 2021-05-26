@@ -127,8 +127,117 @@ return render(request, 'login.html',context) # get요청일때의 반환값
 ```
 <br>
 
->__로그아웃 페이지 구현__   
+>__로그아웃 구현__   
 
 __1. ```auth.logout(request)```를 사용해 현재 로그인되어 있는 user를 로그아웃 해준다__   
+```python
+def logout(request):
+  auth.logout(request)
+  return redirect('home')
+``` 
 
 <br>
+
+>__글 작성 페이지 구현__     
+
+__1. 카테고리와 카테고리 각각의 글을 볼 수 있는 페이지를 나누어 구현한다__   
+
+![template](https://user-images.githubusercontent.com/64240637/119611858-30225580-be36-11eb-8763-ff92562403c4.png)
+
+- category.html : 만들어 놓은 카테고리를 화면에 보여준다     
+- writer.html : 카테고리를 직접 선택해 글을 작성할 수 있다   
+- article_list.html : 카테고리를 누르면 카테고리에 해당하는 글의 목록을 화면에 보여준다     
+- article_writer.html : 작성하기를 누르면 해당 카테고리에 글을 작성할 수 있다        
+- article_detail.html : 글을 선택하면 글의 세부 내용을 볼 수 있다     
+
+<br>
+
+__2. 카테고리를 작성하기 위해 model을 작성한 후 admin에 직접 카테고리 내용을 추가해준다__      
+Category와 Article 두개의 모델을 작성한다. Article은 글을 작성할때 쓰이는 모델이므로 작성자를 User와 1:n으로 묶어준다. 이때 user가 생성될때 함께 생성되는 profile 모델이 있다. 작성자를 user와 묶어줄 수 있지만 profile과 묶어줄 수도 있다. __이는 선택사항이므로 선택해서 묶어준다. 단, 통일성있게 묶어야 한다는 것을 잊지말자!__ 작성되는 세부글은 카테고리를 선택해야 하기 때문에 글의 카테고리도 category와 1:n으로 묶어주어야 한다. 여기서는 user로 묶는 것으로 통일시키겠다   
+
+![category](https://user-images.githubusercontent.com/64240637/119616286-644c4500-be3b-11eb-8a45-8246e84190bf.png) 
+
+```python
+# models.py
+
+class Category(models.Model):
+    name = models.CharField(max_length=32)
+    
+class Article(Timestampable):
+  category = models.ForeignKey(Category, on_delete=models.CASCADE,blank=True, related_name='article')
+  writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article')
+  title = models.CharField(max_length=64)
+  content = models.TextField()
+  is_deleted = models.BooleanField(default=False)
+```
+하나의 category는 여러개의 article에서 접근할 수 있으며(1:n) 현재 로그인한 user가 여러개의 article을 작성할 수 있다(1:n)    
+
+<br>
+
+__3. category를 all()함수를 사용해 템플릿에 그려준 뒤 각각의 category중 하나를 누르면 pk와 함께 article_list view에 데이터를 보낸다. article_list는 해당 category의 pk를 받아 category에 쓰인 article을 filter함수를 사용하여 필터하여 모든 데이터를 가져온다.__    
+이때 article_list 템플릿에서 카테고리에 관련된 글을 작성하기 위해서는 어떤 카테고리인지 알아야하기 때문에 view에서 현재 들어와 있는 카테고리의 pk를 함께 템플릿에 보내준다    
+```python
+# views.py
+
+def article_list(request, category_pk):
+  article = Article.objects.filter(category__pk = category_pk).all()
+  category_pk = Category.objects.filter(pk = category_pk).first().pk # 템플릿에서 해당하는 카테고리 찾기 위해서
+  # Article category__pk.pk로 하면 Article이 없는 카테고리를 들어갈때 에러 발생함
+  context = {
+    'articles':article,
+    'category_pk':category_pk
+  }
+  return render(request, 'article_list.html',context)
+```
+article안에 있는 글작서 버튼을 누를때 카테고리가 선택되어져 있어야 하기 때문에 category의 pk 데이터를 함께 url에 보낸다     
+```html
+<a href="{% url 'blog:article_writer' category_pk %}">글작성하기</a>     
+```
+<br>
+
+__4. article_writer에서 작성한 데이터를 받아 article을 Create해준다__     
+```python
+#views.py
+
+def article_writer(request, category_pk):
+  category = Category.objects.filter(pk = category_pk).first()
+  if request.method == 'POST':
+    title = request.POST['title']
+    content = request.POST['content']
+    Article.objects.create(
+      title = title,
+      content = content,
+      category = category,
+      writer = request.user
+    )
+    return redirect('blog:article_list',category_pk)
+  context = {
+    'category':category
+  }
+  return render(request, 'article_writer.html',context)
+
+```
+<br>
+
+__5. category.html에서도 글작성하기를 추가한다__    
+이때는 글 작성할때 카테고리를 직접 선택해야 하기 때문에 category로부터 get요청이 들어올 때 all함수를 사용하여 category의 모든 데이터를 함께 보내준다. 데이터를 받은 템플릿은 form안에서 select-option을 사용하여 category를 선택할 수 있게 한다    
+
+```html
+<!--  writer.html -->
+
+<form action="{% url 'blog:writer' %}"method="POST">
+  {% csrf_token %}
+  <select name="category_pk">
+    {% for category in categories %}
+    <option value="{{category.pk}}">{{category}}</option>  <!--각각의 카테고리 중 하나 선택시 해당 Category.pk 데이터가 보내진다-->
+    {% endfor %}
+  </select><br><br>
+.....
+</form>
+```
+writer.html에서 사용자가 작성한 제목, 글, 선택한 카테고리 데이터가 전송되어 writer view에서 새로운 article 필드가 생성된다. create로 생성되어지며 위의 코드와 같이 생성된다    
+<br>
+
+__6. 작성된 글의 세부사항을 보기 위해서 article_list에서 각각의 글들을 누르면 해당 글의 pk 데이터가 article_detail view로 전달된다__   
+article_detail은 해당 pk에 맞는 글을 필터해 템플릿에 데이터를 보내준다    
+ 

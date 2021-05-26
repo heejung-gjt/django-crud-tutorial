@@ -70,3 +70,22 @@ def article_writer(request, category_pk):
     'category':category
   }
   return render(request, 'article_writer.html',context)
+
+
+def article_edit(request, article_pk):
+  article = get_object_or_404(Article,pk = article_pk)
+  context = {
+    'article':article,
+    'state':False
+  }
+  if request.method == 'POST':
+    title = request.POST['title']
+    content = request.POST['content']
+    if title and content:
+      Article.objects.filter(pk=article_pk).update(
+        title = title,
+        content = content
+      )
+      return redirect('blog:article_detail',article_pk)
+    context['state'] = True
+  return render(request, 'article_edit.html',context)
